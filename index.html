@@ -1,0 +1,31 @@
+
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hospital QR Landing</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/app.js"></script>
+<div class="container">
+  <div class="hero grid">
+    <h2>Scan complete ✅</h2>
+    <p class="small">Choose your hospital to personalize the header and links.</p>
+    <label class="badge">Hospital</label>
+    <select id="hospital" aria-label="Hospital">
+      <option data-name="ABC Hospital" data-url="https://abc-hospital.example">ABC Hospital</option>
+      <option data-name="EFG Hospital" data-url="https://efg-hospital.example">EFG Hospital</option>
+    </select>
+    <button class="btn full" id="continue">Continue</button>
+    <div class="small center">See more options? <a href="select-hospital.html">Full list</a></div>
+  </div>
+  <p class="small center">Tip: Add to Home Screen for app-like feel.</p>
+</div>
+<script>
+  document.getElementById('continue').addEventListener('click', function(){
+    var sel = document.getElementById('hospital');
+    var opt = sel.options[sel.selectedIndex];
+    var obj = { name: opt.getAttribute('data-name'), url: opt.getAttribute('data-url') };
+    App.setHospital(obj);
+    App.go('menu.html');
+  });
+</script>
+</html>

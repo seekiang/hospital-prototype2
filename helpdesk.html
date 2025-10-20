@@ -1,0 +1,69 @@
+<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><title>Live Helpdesk</title><link rel='stylesheet' href='assets/css/style.css'><script src='assets/js/app.js'></script>
+<header class="header">
+  <a class="logo" data-hospital-link href="https://example.org" target="_blank" rel="noopener">
+    <img alt="Hospital" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"/>
+    <div class="title"><span data-hospital-name>Your Hospital</span></div>
+  </a>
+  <a class="jump" href="menu.html">Home</a>
+</header>
+
+<div class="container">
+  <div class="card video-wrap">
+    <div class="remote" id="remote"></div>
+    <div class="local" id="local"><video id="localVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;border-radius:16px"></video></div>
+    <div class="grid cols-2">
+      <button class="btn" id="startCam">Start Camera</button>
+      <button class="btn ok" id="call">Call Agent</button>
+    </div>
+    <div class="grid cols-2">
+      <button class="btn warn" id="mute">Mute</button>
+      <button class="btn danger" id="hangup">Hang Up</button>
+    </div>
+    <div class="timer" id="timer">Not connected</div>
+    <p class="small">Simulation only. Replace with WebRTC provider in production.</p>
+  </div>
+</div>
+<script>
+  App.applyHeader();
+  var startCam=document.getElementById('startCam');
+  var call=document.getElementById('call');
+  var mute=document.getElementById('mute');
+  var hangup=document.getElementById('hangup');
+  var localVideo=document.getElementById('localVideo');
+  var timerEl=document.getElementById('timer');
+  var remote=document.getElementById('remote');
+  var stream=null, connected=false, sec=0, t=null, muted=false;
+
+  startCam.onclick = async function(){
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+      localVideo.srcObject = stream;
+    }catch(e){
+      alert('Camera/Mic permission denied.');
+    }
+  };
+
+  call.onclick = function(){
+    if(!stream){ alert('Start camera first'); return; }
+    connected=true; sec=0; timerEl.textContent='Connecting…';
+    remote.style.outline='2px solid rgba(76,201,240,.6)';
+    if(t) clearInterval(t);
+    t=setInterval(function(){
+      sec++; timerEl.textContent='Connected: '+sec+'s';
+      if(sec===2) remote.textContent='[Agent connected 👩‍⚕️]';
+    },1000);
+  };
+
+  mute.onclick = function(){
+    if(!stream) return;
+    muted=!muted;
+    stream.getAudioTracks().forEach(function(tr){ tr.enabled=!muted; });
+    mute.textContent = muted? 'Unmute' : 'Mute';
+  };
+
+  hangup.onclick = function(){
+    connected=false; if(t) clearInterval(t); timerEl.textContent='Not connected';
+    remote.textContent=''; remote.style.outline='none';
+  };
+</script>
+</html>
