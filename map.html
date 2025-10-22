@@ -1,54 +1,104 @@
-<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><title>Wayfinding Map</title><link rel='stylesheet' href='assets/css/style.css'><script src='assets/js/app.js'></script>
-<header class="header">
-  <a class="logo" data-hospital-link href="https://example.org" target="_blank" rel="noopener">
-    <img alt="Hospital" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"/>
-    <div class="title"><span data-hospital-name>Your Hospital</span></div>
-  </a>
-  <a class="jump" href="menu.html">Home</a>
-</header>
-
-<div class="container">
-  <div class="card">
-    <div class="badge">Wayfinding</div>
-    <div id="label" class="small"></div>
-    <div id="map" class="map"></div>
-    <div class="grid cols-2" style="margin-top:10px">
-      <button class="btn" id="recenter">Re-center</button>
-      <button class="btn ok" id="arrived">Mark as Arrived</button>
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  /><title>Wayfinding Map</title
+  ><link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/app.js"></script>
+  <header class="header">
+    <a
+      class="logo"
+      data-hospital-link
+      href="https://example.org"
+      target="_blank"
+      rel="noopener"
+    >
+      <img
+        alt="Hospital"
+        src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"
+      />
+      <div class="title"><span data-hospital-name>Your Hospital</span></div>
+    </a>
+    <a class="jump" href="menu.html">Home</a>
+  </header>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="badge">Wayfinding</div>
+        <div id="label" class="small"></div>
+        <div id="map" class="map"></div>
+        <div class="grid cols-2" style="margin-top: 10px">
+          <button class="btn" id="recenter">Re-center</button>
+          <button class="btn ok" id="arrived">Mark as Arrived</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<script>
-  App.applyHeader();
-  var p = App.params();
-  document.getElementById('label').textContent = p.label ? ('Destination: '+p.label) : 'Tap to move your blue dot.';
-  var map = document.getElementById('map');
-  var user = document.createElement('div'); user.className='marker'; map.appendChild(user);
-  var dest = document.createElement('div'); dest.className='marker dest'; map.appendChild(dest);
-  function place(el,x,y){ el.style.left=x+'%'; el.style.top=y+'%'; }
-  var lookup = {
-    'counter_reg':[80,20],'triage':[65,35],'ecg_room':[30,70],'xray_lab':[60,75],
-    'phlebotomy':[40,50],'clinic_counter':[25,30],'consult_room':[75,60],'pharmacy':[20,80],'poi':[60,50]
-  };
-  var dxy = lookup[p.dest] || lookup.poi;
-  place(user, 10, 10); place(dest, dxy[0], dxy[1]);
-  var route=null;
-  function draw(){
-    if(route) route.remove();
-    route = document.createElement('div'); route.className='route';
-    var x1=parseFloat(user.style.left), y1=parseFloat(user.style.top);
-    var x2=parseFloat(dest.style.left), y2=parseFloat(dest.style.top);
-    var dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy), ang=Math.atan2(dy,dx)*180/Math.PI;
-    route.style.left=x1+'%'; route.style.top=y1+'%'; route.style.width=len+'%'; route.style.transform='rotate('+ang+'deg)';
-    map.appendChild(route);
-  }
-  draw();
-  map.addEventListener('click', function(e){
-    var r = map.getBoundingClientRect();
-    var x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100;
-    place(user,x,y); draw();
-  });
-  document.getElementById('recenter').addEventListener('click', function(){ place(user,10,10); draw(); });
-  document.getElementById('arrived').addEventListener('click', function(){ alert('Arrived at '+(p.label||'destination')); });
-</script>
+  </body>
+  <script>
+    App.applyHeader();
+    var p = App.params();
+    document.getElementById("label").textContent = p.label
+      ? "Destination: " + p.label
+      : "Tap to move your blue dot.";
+    var map = document.getElementById("map");
+    var user = document.createElement("div");
+    user.className = "marker";
+    map.appendChild(user);
+    var dest = document.createElement("div");
+    dest.className = "marker dest";
+    map.appendChild(dest);
+    function place(el, x, y) {
+      el.style.left = x + "%";
+      el.style.top = y + "%";
+    }
+    var lookup = {
+      counter_reg: [80, 20],
+      triage: [65, 35],
+      ecg_room: [30, 70],
+      xray_lab: [60, 75],
+      phlebotomy: [40, 50],
+      clinic_counter: [25, 30],
+      consult_room: [75, 60],
+      pharmacy: [20, 80],
+      poi: [60, 50],
+    };
+    var dxy = lookup[p.dest] || lookup.poi;
+    place(user, 10, 10);
+    place(dest, dxy[0], dxy[1]);
+    var route = null;
+    function draw() {
+      if (route) route.remove();
+      route = document.createElement("div");
+      route.className = "route";
+      var x1 = parseFloat(user.style.left),
+        y1 = parseFloat(user.style.top);
+      var x2 = parseFloat(dest.style.left),
+        y2 = parseFloat(dest.style.top);
+      var dx = x2 - x1,
+        dy = y2 - y1,
+        len = Math.hypot(dx, dy),
+        ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+      route.style.left = x1 + "%";
+      route.style.top = y1 + "%";
+      route.style.width = len + "%";
+      route.style.transform = "rotate(" + ang + "deg)";
+      map.appendChild(route);
+    }
+    draw();
+    map.addEventListener("click", function (e) {
+      var r = map.getBoundingClientRect();
+      var x = ((e.clientX - r.left) / r.width) * 100,
+        y = ((e.clientY - r.top) / r.height) * 100;
+      place(user, x, y);
+      draw();
+    });
+    document.getElementById("recenter").addEventListener("click", function () {
+      place(user, 10, 10);
+      draw();
+    });
+    document.getElementById("arrived").addEventListener("click", function () {
+      alert("Arrived at " + (p.label || "destination"));
+    });
+  </script>
 </html>
