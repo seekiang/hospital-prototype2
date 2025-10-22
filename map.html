@@ -6,6 +6,16 @@
   /><title>Wayfinding Map</title
   ><link rel="stylesheet" href="assets/css/style.css" />
   <script src="assets/js/app.js"></script>
+  <!-- dependent maplibre-gl -->
+  <script src="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.js"></script>
+  <link
+    href="https://unpkg.com/maplibre-gl@5.2.0/dist/maplibre-gl.css"
+    rel="stylesheet"
+  />
+  <!-- mapxus map -->
+  <script src="https://web-sdk.mapxus.com/prod/mapxus-map-9.3.0.js"></script>
+  <script src="https://web-sdk.mapxus.com/prod/mapxus-map-9.3.0.css"></script>
+
   <header class="header">
     <a
       class="logo"
@@ -35,70 +45,106 @@
       </div>
     </div>
   </body>
-  <script>
+  <script type="module">
+    import destinations from "./destinations.json" with { type: "json" };
+    console.log(destinations);
     App.applyHeader();
     var p = App.params();
     document.getElementById("label").textContent = p.label
       ? "Destination: " + p.label
       : "Tap to move your blue dot.";
-    var map = document.getElementById("map");
-    var user = document.createElement("div");
-    user.className = "marker";
-    map.appendChild(user);
-    var dest = document.createElement("div");
-    dest.className = "marker dest";
-    map.appendChild(dest);
-    function place(el, x, y) {
-      el.style.left = x + "%";
-      el.style.top = y + "%";
-    }
-    var lookup = {
-      counter_reg: [80, 20],
-      triage: [65, 35],
-      ecg_room: [30, 70],
-      xray_lab: [60, 75],
-      phlebotomy: [40, 50],
-      clinic_counter: [25, 30],
-      consult_room: [75, 60],
-      pharmacy: [20, 80],
-      poi: [60, 50],
-    };
-    var dxy = lookup[p.dest] || lookup.poi;
-    place(user, 10, 10);
-    place(dest, dxy[0], dxy[1]);
-    var route = null;
-    function draw() {
-      if (route) route.remove();
-      route = document.createElement("div");
-      route.className = "route";
-      var x1 = parseFloat(user.style.left),
-        y1 = parseFloat(user.style.top);
-      var x2 = parseFloat(dest.style.left),
-        y2 = parseFloat(dest.style.top);
-      var dx = x2 - x1,
-        dy = y2 - y1,
-        len = Math.hypot(dx, dy),
-        ang = (Math.atan2(dy, dx) * 180) / Math.PI;
-      route.style.left = x1 + "%";
-      route.style.top = y1 + "%";
-      route.style.width = len + "%";
-      route.style.transform = "rotate(" + ang + "deg)";
-      map.appendChild(route);
-    }
-    draw();
-    map.addEventListener("click", function (e) {
-      var r = map.getBoundingClientRect();
-      var x = ((e.clientX - r.left) / r.width) * 100,
-        y = ((e.clientY - r.top) / r.height) * 100;
-      place(user, x, y);
-      draw();
+    // var map = document.getElementById("map");
+    // ----------
+    if (p.label) var poiId = destinations["The Pulse"]["POIs"][p.label]["poiId"];
+    // init maplibre-gl map
+    const maplibreMap = new maplibregl.Map({
+      container: "map",
+      zoom: 19,
     });
-    document.getElementById("recenter").addEventListener("click", function () {
-      place(user, 10, 10);
-      draw();
+    // init mapxus map
+    const map = new MapxusMap.Map({
+      map: maplibreMap,
+      appId: "b7b0fa6c86244c538fad65315f45df54",
+      secret: "585664ac9bcd4e45867754cbcf090389",
+      // Specify one of venueId/buildingId/floorId/poiId to locate.
+      // If all are provided, poiId(poiId > floorId > buildingId > venueId > sharedFloorId) will be used.
+      venueId: "492d26657ff245f09837ec4280d47fcc",
+      // buildingId: 'buildingId',
+      // floorId: 'floorId',
+      poiId: poiId,
+      // sharedFloorId: 'sharedFloorId'
+      floorSelectorStyle: {
+        itemCount: 5,
+        fontColor: "#389e0d",
+        activeFontColor: "#d46b08",
+        backgroundColor: "#f6ffed",
+        activeBackgroundColor: "#fff7e6",
+        defaultFolded: true,
+      },
     });
-    document.getElementById("arrived").addEventListener("click", function () {
-      alert("Arrived at " + (p.label || "destination"));
+    map.renderComplete(() => {
+      map.onPoiClickListener(({ coordinate, poi, floor, building, venue }) => {
+        console.log(coordinate, poi, floor, building, venue);
+      });
     });
+    // --------- Deprecated
+    // var user = document.createElement("div");
+    // user.className = "marker";
+    // map.appendChild(user);
+    // var dest = document.createElement("div");
+    // dest.className = "marker dest";
+    // map.appendChild(dest);
+    // function place(el, x, y) {
+    //   el.style.left = x + "%";
+    //   el.style.top = y + "%";
+    // }
+    // var lookup = {
+    //   counter_reg: [80, 20],
+    //   triage: [65, 35],
+    //   ecg_room: [30, 70],
+    //   xray_lab: [60, 75],
+    //   phlebotomy: [40, 50],
+    //   clinic_counter: [25, 30],
+    //   consult_room: [75, 60],
+    //   pharmacy: [20, 80],
+    //   poi: [60, 50],
+    // };
+    // var dxy = lookup[p.dest] || lookup.poi;
+    // place(user, 10, 10);
+    // place(dest, dxy[0], dxy[1]);
+    // var route = null;
+    // function draw() {
+    //   if (route) route.remove();
+    //   route = document.createElement("div");
+    //   route.className = "route";
+    //   var x1 = parseFloat(user.style.left),
+    //     y1 = parseFloat(user.style.top);
+    //   var x2 = parseFloat(dest.style.left),
+    //     y2 = parseFloat(dest.style.top);
+    //   var dx = x2 - x1,
+    //     dy = y2 - y1,
+    //     len = Math.hypot(dx, dy),
+    //     ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+    //   route.style.left = x1 + "%";
+    //   route.style.top = y1 + "%";
+    //   route.style.width = len + "%";
+    //   route.style.transform = "rotate(" + ang + "deg)";
+    //   map.appendChild(route);
+    // }
+    // draw();
+    // map.addEventListener("click", function (e) {
+    //   var r = map.getBoundingClientRect();
+    //   var x = ((e.clientX - r.left) / r.width) * 100,
+    //     y = ((e.clientY - r.top) / r.height) * 100;
+    //   place(user, x, y);
+    //   draw();
+    // });
+    // document.getElementById("recenter").addEventListener("click", function () {
+    //   place(user, 10, 10);
+    //   draw();
+    // });
+    // document.getElementById("arrived").addEventListener("click", function () {
+    //   alert("Arrived at " + (p.label || "destination"));
+    // });
   </script>
 </html>
