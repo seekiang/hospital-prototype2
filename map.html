@@ -45,8 +45,11 @@
       </div>
     </div>
   </body>
+  <script type="module" src="./utils.js"></script>
   <script type="module">
     import destinations from "./destinations.json" with { type: "json" };
+    import { searchPOIByIds } from "./utils.js";
+
     console.log(destinations);
     App.applyHeader();
     var p = App.params();
@@ -55,7 +58,8 @@
       : "Tap to move your blue dot.";
     // var map = document.getElementById("map");
     // ----------
-    if (p.label) var poiId = destinations["The Pulse"]["POIs"][p.label]["poiId"];
+    var toPoiId = p.label ? destinations["The Pulse"]["POIs"][p.label]["poiId"]: "";
+    var fromPoiId = p.from ? destinations["The Pulse"]["POIs"][p.from]["poiId"] : "";
     // init maplibre-gl map
     const maplibreMap = new maplibregl.Map({
       container: "map",
@@ -71,7 +75,7 @@
       venueId: "492d26657ff245f09837ec4280d47fcc",
       // buildingId: 'buildingId',
       // floorId: 'floorId',
-      poiId: poiId,
+      poiId: toPoiId,
       // sharedFloorId: 'sharedFloorId'
       floorSelectorStyle: {
         itemCount: 5,
@@ -82,11 +86,66 @@
         defaultFolded: true,
       },
     });
-    map.renderComplete(() => {
+    map.renderComplete(async () => {
+      var routeService = new MapxusMap.RouteService();
+      const routePainter = new MapxusMap.RoutePainter(maplibreMap, {
+        lineColor: "#ff4d4f",
+        lineWidth: 6,
+      });
       map.onPoiClickListener(({ coordinate, poi, floor, building, venue }) => {
         console.log(coordinate, poi, floor, building, venue);
       });
+      let fromCoords = null;
+      let toCoords = null;
+      if (fromPoiId) {
+        console.log("Searching POIs by ID:", [fromPoiId, toPoiId]);
+        const res = await searchPOIByIds([fromPoiId, toPoiId]);
+         fromCoords = {
+          lat: res.data.result.pois[0].location.lat,
+          lon: res.data.result.pois[0].location.lon,
+          floor: res.data.result.pois[0].floorId
+        };
+         toCoords = {
+          lat: res.data.result.pois[1].location.lat,
+          lon: res.data.result.pois[1].location.lon,
+          floor: res.data.result.pois[1].floorId
+        };
+
+      }
+      else {
+        console.log("Searching POIs by ID:", toPoiId);
+        const res = await searchPOIByIds([toPoiId]);
+         toCoords = {
+          lat: res.data.result.pois[0].location.lat,
+          lon: res.data.result.pois[0].location.lon,
+          floor: res.data.result.pois[0].floorId
+        };
+      }
+      console.log(fromCoords, toCoords);
+      // Paint the route
+      if (fromCoords && toCoords) {
+        console.log("Routing from", fromCoords, "to", toCoords);
+        const pathRes = await routeService.search({
+          points: [
+            {
+              lat: fromCoords.lat,
+              lon: fromCoords.lon,
+              floorId: fromCoords.floor
+            },
+            {
+              lat: toCoords.lat,
+              lon: toCoords.lon,
+              floorId: toCoords.floor
+            }
+          ]
+        });
+        const path = pathRes.data.result.paths[0];
+        console.log(path)
+        routePainter.render(path, [[fromCoords.lon, fromCoords.lat], [toCoords.lon, toCoords.lat]]);
+      }
     });
+
+
     // --------- Deprecated
     // var user = document.createElement("div");
     // user.className = "marker";
