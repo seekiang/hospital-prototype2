@@ -30,7 +30,7 @@
           <option value="">-- Choose --</option>
           <option value="health">Health Check</option>
           <option value="blood">Blood Test</option>
-          <option value="xray">X-ray</option>
+          <option value="xray">X-Ray</option>
           <option value="clinic">Clinic Visit</option>
           <option value="doctor">Doctor's Appointment</option>
         </select>
@@ -41,12 +41,13 @@
   </body>
   <script>
     App.applyHeader();
+
     var journeys = {
       health: [
         "Registration",
         "Triage",
         "ECG",
-        "X-ray",
+        "X-Ray",
         "Consultation",
         "Pharmacy",
       ],
@@ -72,9 +73,13 @@
       Pharmacy: "pharmacy",
     };
     var steps = document.getElementById("steps");
+    var prevStep = ""
     var purpose = document.getElementById("purpose");
+    
+    window.addEventListener("load", render);
     purpose.addEventListener("change", render);
     function render() {
+      console.log("loaded")
       steps.innerHTML = "";
       var key = purpose.value;
       if (!key) return;
@@ -88,22 +93,26 @@
           '<div class="grid cols-2">' +
           '<button class="btn" data-step="' +
           step +
-          '">Show me the way</button>' +
+          '"' + `data-prev-step=${prevStep}` +  '>Show me the way</button>' +
           '<button class="btn ghost">Info</button>' +
           '</div><hr class="sep">';
         steps.appendChild(row);
+        prevStep = step;
       });
       [].slice
         .call(steps.querySelectorAll("[data-step]"))
         .forEach(function (btn) {
           btn.addEventListener("click", function () {
             var step = btn.getAttribute("data-step");
+            var prevStepAttr = btn.getAttribute("data-prev-step");
             var dest = mapTargets[step] || "poi";
             App.go(
               "map.html?dest=" +
                 encodeURIComponent(dest) +
                 "&label=" +
-                encodeURIComponent(step)
+                encodeURIComponent(step) +
+                "&from=" + 
+                encodeURIComponent(prevStepAttr)
             );
           });
         });

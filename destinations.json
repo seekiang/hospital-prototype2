@@ -32,6 +32,11 @@
         "actualPOI": "PASSION",
         "poiId": "10485481",
         "floor": 4
+      },
+      "Clinic Counter": {
+        "actualPOI": "Pantry",
+        "poiId": "10485311",
+        "floor": 4
       }
     }
   }
