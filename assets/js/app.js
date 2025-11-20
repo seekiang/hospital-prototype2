@@ -2,14 +2,17 @@
   function setHospital(obj) {
     try {
       localStorage.setItem("hospital", JSON.stringify(obj));
+      console.log("Hospital set to:", obj);
     } catch (e) {}
   }
   function getHospital() {
     try {
+      console.log("Hospital get:", localStorage.getItem("hospital"));
       return (
         JSON.parse(localStorage.getItem("hospital")) || {
           name: "Your Hospital",
           url: "https://example.org",
+          logofile: "assets/img/hospital-logo.png",
         }
       );
     } catch (e) {
@@ -37,6 +40,9 @@
     var h = getHospital();
     var title = document.querySelector("[data-hospital-name]");
     var link = document.querySelector("[data-hospital-link]");
+    var logo = document.querySelector("[data-hospital-logo]");
+    console.log(h);
+    if (logo) logo.src = "/assets/img/" + h.logofile;
     if (title) title.textContent = h.name;
     if (link) link.href = h.url;
   }
