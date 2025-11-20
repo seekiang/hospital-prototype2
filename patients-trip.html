@@ -1,63 +1,112 @@
-<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><title>Patient's Trip</title><link rel='stylesheet' href='assets/css/style.css'><script src='assets/js/app.js'></script>
-<header class="header">
-  <a class="logo" data-hospital-link href="https://example.org" target="_blank" rel="noopener">
-    <img alt="Hospital" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"/>
-    <div class="title"><span data-hospital-name>Your Hospital</span></div>
-  </a>
-  <a class="jump" href="menu.html">Home</a>
-</header>
-
-<div class="container">
-  <div class="card">
-    <div class="badge">Select your purpose of visit</div>
-    <select id="purpose">
-      <option value="">-- Choose --</option>
-      <option value='health'>Health Check</option>
-      <option value='blood'>Blood Test</option>
-      <option value='xray'>X-ray</option>
-      <option value='clinic'>Clinic Visit</option>
-      <option value='doctor'>Doctor's Appointment</option>
-    </select>
-    <hr class="sep">
-    <div id="steps" class="grid"></div>
-  </div>
-</div>
-<script>
-  App.applyHeader();
-  var journeys = {
-    health: ['Registration','Triage','ECG','X-ray','Consultation','Pharmacy'],
-    blood: ['Registration','Triage','Blood Draw','Consultation','Pharmacy'],
-    xray:  ['Registration','Triage','X-ray','Consultation','Pharmacy'],
-    clinic:['Registration','Clinic Counter','Consultation','Pharmacy'],
-    doctor:['Registration','Consultation','Pharmacy']
-  };
-  var mapTargets = {
-    'Registration':'counter_reg','Triage':'triage','ECG':'ecg_room','X-ray':'xray_lab',
-    'Blood Draw':'phlebotomy','Clinic Counter':'clinic_counter','Consultation':'consult_room','Pharmacy':'pharmacy'
-  };
-  var steps = document.getElementById('steps');
-  var purpose = document.getElementById('purpose');
-  purpose.addEventListener('change', render);
-  function render(){
-    steps.innerHTML='';
-    var key = purpose.value; if(!key) return;
-    journeys[key].forEach(function(step){
-      var row = document.createElement('div');
-      row.className='grid';
-      row.innerHTML = '<label><input type="checkbox" style="transform:scale(1.2)"/> '+step+'</label>' +
-                      '<div class="grid cols-2">' +
-                        '<button class="btn" data-step="'+step+'">Show me the way</button>' +
-                        '<button class="btn ghost">Info</button>' +
-                      '</div><hr class="sep">';
-      steps.appendChild(row);
-    });
-    [].slice.call(steps.querySelectorAll('[data-step]')).forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var step = btn.getAttribute('data-step');
-        var dest = mapTargets[step] || 'poi';
-        App.go('map.html?dest='+encodeURIComponent(dest)+'&label='+encodeURIComponent(step));
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  /><title>Patient's Trip</title
+  ><link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/app.js"></script>
+  <header class="header">
+    <a
+      class="logo"
+      data-hospital-link
+      href="https://example.org"
+      target="_blank"
+      rel="noopener"
+    >
+      <img
+        alt="Hospital"
+        src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"
+      />
+      <div class="title"><span data-hospital-name>Your Hospital</span></div>
+    </a>
+    <a class="jump" href="menu.html">Home</a>
+  </header>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="badge">Select your purpose of visit</div>
+        <select id="purpose">
+          <option value="">-- Choose --</option>
+          <option value="health">Health Check</option>
+          <option value="blood">Blood Test</option>
+          <option value="xray">X-ray</option>
+          <option value="clinic">Clinic Visit</option>
+          <option value="doctor">Doctor's Appointment</option>
+        </select>
+        <hr class="sep" />
+        <div id="steps" class="grid"></div>
+      </div>
+    </div>
+  </body>
+  <script>
+    App.applyHeader();
+    var journeys = {
+      health: [
+        "Registration",
+        "Triage",
+        "ECG",
+        "X-ray",
+        "Consultation",
+        "Pharmacy",
+      ],
+      blood: [
+        "Registration",
+        "Triage",
+        "Blood Draw",
+        "Consultation",
+        "Pharmacy",
+      ],
+      xray: ["Registration", "Triage", "X-ray", "Consultation", "Pharmacy"],
+      clinic: ["Registration", "Clinic Counter", "Consultation", "Pharmacy"],
+      doctor: ["Registration", "Consultation", "Pharmacy"],
+    };
+    var mapTargets = {
+      Registration: "counter_reg",
+      Triage: "triage",
+      ECG: "ecg_room",
+      "X-ray": "xray_lab",
+      "Blood Draw": "phlebotomy",
+      "Clinic Counter": "clinic_counter",
+      Consultation: "consult_room",
+      Pharmacy: "pharmacy",
+    };
+    var steps = document.getElementById("steps");
+    var purpose = document.getElementById("purpose");
+    purpose.addEventListener("change", render);
+    function render() {
+      steps.innerHTML = "";
+      var key = purpose.value;
+      if (!key) return;
+      journeys[key].forEach(function (step) {
+        var row = document.createElement("div");
+        row.className = "grid";
+        row.innerHTML =
+          '<label><input type="checkbox" style="transform:scale(1.2)"/> ' +
+          step +
+          "</label>" +
+          '<div class="grid cols-2">' +
+          '<button class="btn" data-step="' +
+          step +
+          '">Show me the way</button>' +
+          '<button class="btn ghost">Info</button>' +
+          '</div><hr class="sep">';
+        steps.appendChild(row);
       });
-    });
-  }
-</script>
+      [].slice
+        .call(steps.querySelectorAll("[data-step]"))
+        .forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var step = btn.getAttribute("data-step");
+            var dest = mapTargets[step] || "poi";
+            App.go(
+              "map.html?dest=" +
+                encodeURIComponent(dest) +
+                "&label=" +
+                encodeURIComponent(step)
+            );
+          });
+        });
+    }
+  </script>
 </html>

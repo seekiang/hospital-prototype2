@@ -1,107 +1,174 @@
-<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><title>Hospital Directory</title><link rel='stylesheet' href='assets/css/style.css'><script src='assets/js/app.js'></script>
-<header class="header">
-  <a class="logo" data-hospital-link href="https://example.org" target="_blank" rel="noopener">
-    <img alt="Hospital" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"/>
-    <div class="title"><span data-hospital-name>Your Hospital</span></div>
-  </a>
-  <a class="jump" href="menu.html">Home</a>
-</header>
-
-<div class="container">
-  <div class="card">
-    <div class="grid" style="gap:8px">
-      <div class="grid" style="grid-template-columns:1fr auto; gap:8px">
-        <input id="q" class="input" placeholder="Search clinics, departments, toilets..." aria-label="Search">
-        <button class="btn" id="shareBtn" title="Share this page">Share</button>
-      </div>
-      <div class="toolbar" role="toolbar" aria-label="POI filters">
-        <button class="tool" data-cat="facilities" title="Facilities">🏧 Facilities</button>
-        <button class="tool" data-cat="toilets" title="Toilets">🚻 Toilets</button>
-        <button class="tool" data-cat="clinics" title="Clinics">🏥 Clinics</button>
-        <button class="tool" data-cat="departments" title="Departments">🏢 Departments</button>
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  /><title>Hospital Directory</title
+  ><link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/app.js"></script>
+  <header class="header">
+    <a
+      class="logo"
+      data-hospital-link
+      href="https://example.org"
+      target="_blank"
+      rel="noopener"
+    >
+      <img
+        alt="Hospital"
+        src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"
+      />
+      <div class="title"><span data-hospital-name>Your Hospital</span></div>
+    </a>
+    <a class="jump" href="menu.html">Home</a>
+  </header>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="grid" style="gap: 8px">
+          <div class="grid" style="grid-template-columns: 1fr auto; gap: 8px">
+            <input
+              id="q"
+              class="input"
+              placeholder="Search clinics, departments, toilets..."
+              aria-label="Search"
+            />
+            <button class="btn" id="shareBtn" title="Share this page">
+              Share
+            </button>
+          </div>
+          <div class="toolbar" role="toolbar" aria-label="POI filters">
+            <button class="tool" data-cat="facilities" title="Facilities">
+              🏧 Facilities
+            </button>
+            <button class="tool" data-cat="toilets" title="Toilets">
+              🚻 Toilets
+            </button>
+            <button class="tool" data-cat="clinics" title="Clinics">
+              🏥 Clinics
+            </button>
+            <button class="tool" data-cat="departments" title="Departments">
+              🏢 Departments
+            </button>
+          </div>
+        </div>
+        <div id="map" class="map"></div>
+        <div class="small">
+          Tap anywhere to move your blue dot. Tap a POI to see details.
+        </div>
       </div>
     </div>
-    <div id="map" class="map"></div>
-    <div class="small">Tap anywhere to move your blue dot. Tap a POI to see details.</div>
-  </div>
-</div>
-<script>
-  App.applyHeader();
-  document.getElementById('shareBtn').addEventListener('click', function(){ App.share('Hospital directory'); });
-
-  var map = document.getElementById('map');
-  var user = document.createElement('div'); user.className='marker'; map.appendChild(user);
-
-  var pois = [
-    {id:'atm1', x:20, y:35, cat:'facilities', name:'ATM (Lobby)'},
-    {id:'wc1', x:70, y:30, cat:'toilets', name:'Toilet (Level 1)'},
-    {id:'clinicA', x:45, y:65, cat:'clinics', name:'Heart Clinic A'},
-    {id:'deptER', x:80, y:75, cat:'departments', name:'Emergency Dept'},
-    {id:'wheel1', x:25, y:70, cat:'facilities', name:'Wheelchair Bay'}
-  ];
-
-  function place(el, x, y){ el.style.left = x+'%'; el.style.top = y+'%'; }
-  function addPOI(p){
-    var d = document.createElement('button');
-    d.className = 'marker dest'; d.style.width='14px'; d.style.height='14px'; d.title=p.name;
-    d.addEventListener('click', function(){ alert(p.name); });
-    d.setAttribute('data-cat', p.cat); d.setAttribute('data-id', p.id);
-    place(d, p.x, p.y);
-    map.appendChild(d);
-  }
-  pois.forEach(addPOI);
-  place(user, 10, 10);
-
-  map.addEventListener('click', function(e){
-    var rect = map.getBoundingClientRect();
-    var x = (e.clientX - rect.left)/rect.width*100;
-    var y = (e.clientY - rect.top)/rect.height*100;
-    place(user, x, y);
-    drawRouteToNearest();
-  });
-
-  var routeEl=null;
-  function renderRoute(dest){
-    if(routeEl) routeEl.remove();
-    if(!dest) return;
-    routeEl = document.createElement('div'); routeEl.className='route';
-    var x1=parseFloat(user.style.left), y1=parseFloat(user.style.top);
-    var x2=parseFloat(dest.style.left), y2=parseFloat(dest.style.top);
-    var dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy);
-    var ang=Math.atan2(dy,dx)*180/Math.PI;
-    routeEl.style.left=x1+'%'; routeEl.style.top=y1+'%';
-    routeEl.style.width=len+'%'; routeEl.style.transform='rotate('+ang+'deg)';
-    map.appendChild(routeEl);
-  }
-  function drawRouteToNearest(){
-    var ux = parseFloat(user.style.left);
-    var uy = parseFloat(user.style.top);
-    var best=null, bestd=1e9;
-    [].slice.call(map.querySelectorAll('.marker.dest')).forEach(function(m){
-      var dx = parseFloat(m.style.left)-ux;
-      var dy = parseFloat(m.style.top)-uy;
-      var d = Math.hypot(dx,dy);
-      if(d<bestd){ bestd=d; best=m; }
+  </body>
+  <script>
+    App.applyHeader();
+    document.getElementById("shareBtn").addEventListener("click", function () {
+      App.share("Hospital directory");
     });
-    renderRoute(best);
-  }
 
-  [].slice.call(document.querySelectorAll('.tool')).forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var cat = btn.getAttribute('data-cat');
-      [].slice.call(map.querySelectorAll('.marker.dest')).forEach(function(m){
-        m.style.display = (m.getAttribute('data-cat')===cat?'block':'none');
+    var map = document.getElementById("map");
+    var user = document.createElement("div");
+    user.className = "marker";
+    map.appendChild(user);
+
+    var pois = [
+      { id: "atm1", x: 20, y: 35, cat: "facilities", name: "ATM (Lobby)" },
+      { id: "wc1", x: 70, y: 30, cat: "toilets", name: "Toilet (Level 1)" },
+      { id: "clinicA", x: 45, y: 65, cat: "clinics", name: "Heart Clinic A" },
+      {
+        id: "deptER",
+        x: 80,
+        y: 75,
+        cat: "departments",
+        name: "Emergency Dept",
+      },
+      { id: "wheel1", x: 25, y: 70, cat: "facilities", name: "Wheelchair Bay" },
+    ];
+
+    function place(el, x, y) {
+      el.style.left = x + "%";
+      el.style.top = y + "%";
+    }
+    function addPOI(p) {
+      var d = document.createElement("button");
+      d.className = "marker dest";
+      d.style.width = "14px";
+      d.style.height = "14px";
+      d.title = p.name;
+      d.addEventListener("click", function () {
+        alert(p.name);
+      });
+      d.setAttribute("data-cat", p.cat);
+      d.setAttribute("data-id", p.id);
+      place(d, p.x, p.y);
+      map.appendChild(d);
+    }
+    pois.forEach(addPOI);
+    place(user, 10, 10);
+
+    map.addEventListener("click", function (e) {
+      var rect = map.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+      place(user, x, y);
+      drawRouteToNearest();
+    });
+
+    var routeEl = null;
+    function renderRoute(dest) {
+      if (routeEl) routeEl.remove();
+      if (!dest) return;
+      routeEl = document.createElement("div");
+      routeEl.className = "route";
+      var x1 = parseFloat(user.style.left),
+        y1 = parseFloat(user.style.top);
+      var x2 = parseFloat(dest.style.left),
+        y2 = parseFloat(dest.style.top);
+      var dx = x2 - x1,
+        dy = y2 - y1,
+        len = Math.hypot(dx, dy);
+      var ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+      routeEl.style.left = x1 + "%";
+      routeEl.style.top = y1 + "%";
+      routeEl.style.width = len + "%";
+      routeEl.style.transform = "rotate(" + ang + "deg)";
+      map.appendChild(routeEl);
+    }
+    function drawRouteToNearest() {
+      var ux = parseFloat(user.style.left);
+      var uy = parseFloat(user.style.top);
+      var best = null,
+        bestd = 1e9;
+      [].slice.call(map.querySelectorAll(".marker.dest")).forEach(function (m) {
+        var dx = parseFloat(m.style.left) - ux;
+        var dy = parseFloat(m.style.top) - uy;
+        var d = Math.hypot(dx, dy);
+        if (d < bestd) {
+          bestd = d;
+          best = m;
+        }
+      });
+      renderRoute(best);
+    }
+
+    [].slice.call(document.querySelectorAll(".tool")).forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cat = btn.getAttribute("data-cat");
+        [].slice
+          .call(map.querySelectorAll(".marker.dest"))
+          .forEach(function (m) {
+            m.style.display =
+              m.getAttribute("data-cat") === cat ? "block" : "none";
+          });
       });
     });
-  });
 
-  var search=document.getElementById('q');
-  search.addEventListener('input', function(){
-    var s=search.value.toLowerCase();
-    [].slice.call(map.querySelectorAll('.marker.dest')).forEach(function(m){
-      var name = m.title.toLowerCase();
-      m.style.display = name.indexOf(s)>-1 ? 'block' : 'none';
+    var search = document.getElementById("q");
+    search.addEventListener("input", function () {
+      var s = search.value.toLowerCase();
+      [].slice.call(map.querySelectorAll(".marker.dest")).forEach(function (m) {
+        var name = m.title.toLowerCase();
+        m.style.display = name.indexOf(s) > -1 ? "block" : "none";
+      });
     });
-  });
-</script>
+  </script>
 </html>

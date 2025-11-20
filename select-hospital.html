@@ -1,34 +1,79 @@
-<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><title>Select Hospital</title><link rel='stylesheet' href='assets/css/style.css'><script src='assets/js/app.js'></script>
-<header class="header">
-  <a class="logo" data-hospital-link href="https://example.org" target="_blank" rel="noopener">
-    <img alt="Hospital" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"/>
-    <div class="title"><span data-hospital-name>Your Hospital</span></div>
-  </a>
-  <a class="jump" href="menu.html">Home</a>
-</header>
-
-<div class="container grid">
-  <div class="card">
-    <label class="badge">Choose your hospital</label>
-    <select id="hospital" aria-label="Hospital">
-      <option data-name="City General Hospital" data-url="https://city-general.example">City General Hospital</option>
-      <option data-name="Eastview Medical Centre" data-url="https://eastview-med.example">Eastview Medical Centre</option>
-      <option data-name="Westside Community Hospital" data-url="https://westside-hosp.example">Westside Community Hospital</option>
-      <option data-name="ABC Hospital" data-url="https://abc-hospital.example">ABC Hospital</option>
-      <option data-name="EFG Hospital" data-url="https://efg-hospital.example">EFG Hospital</option>
-    </select>
-    <div style="height:8px"></div>
-    <button class="btn full" id="save">Continue</button>
-  </div>
-</div>
-<script>
-  App.applyHeader();
-  document.getElementById('save').addEventListener('click', function(){
-    var sel = document.getElementById('hospital');
-    var opt = sel.options[sel.selectedIndex];
-    var obj = { name: opt.getAttribute('data-name'), url: opt.getAttribute('data-url') };
-    App.setHospital(obj);
-    App.go('menu.html');
-  });
-</script>
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  /><title>Select Hospital</title
+  ><link rel="stylesheet" href="assets/css/style.css" />
+  <script src="assets/js/app.js"></script>
+  <header class="header">
+    <a
+      class="logo"
+      data-hospital-link
+      href="https://example.org"
+      target="_blank"
+      rel="noopener"
+    >
+      <img
+        alt="Hospital"
+        src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"
+      />
+      <div class="title"><span data-hospital-name>Your Hospital</span></div>
+    </a>
+    <a class="jump" href="menu.html">Home</a>
+  </header>
+  <body>
+    <div class="container grid">
+      <div class="card">
+        <label class="badge">Choose your hospital</label>
+        <select id="hospital" aria-label="Hospital">
+          <option
+            data-name="City General Hospital"
+            data-url="https://city-general.example"
+          >
+            City General Hospital
+          </option>
+          <option
+            data-name="Eastview Medical Centre"
+            data-url="https://eastview-med.example"
+          >
+            Eastview Medical Centre
+          </option>
+          <option
+            data-name="Westside Community Hospital"
+            data-url="https://westside-hosp.example"
+          >
+            Westside Community Hospital
+          </option>
+          <option
+            data-name="ABC Hospital"
+            data-url="https://abc-hospital.example"
+          >
+            ABC Hospital
+          </option>
+          <option
+            data-name="EFG Hospital"
+            data-url="https://efg-hospital.example"
+          >
+            EFG Hospital
+          </option>
+        </select>
+        <div style="height: 8px"></div>
+        <button class="btn full" id="save">Continue</button>
+      </div>
+    </div>
+  </body>
+  <script>
+    App.applyHeader();
+    document.getElementById("save").addEventListener("click", function () {
+      var sel = document.getElementById("hospital");
+      var opt = sel.options[sel.selectedIndex];
+      var obj = {
+        name: opt.getAttribute("data-name"),
+        url: opt.getAttribute("data-url"),
+      };
+      App.setHospital(obj);
+      App.go("menu.html");
+    });
+  </script>
 </html>

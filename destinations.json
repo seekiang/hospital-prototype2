@@ -1,0 +1,38 @@
+{
+  "The Pulse": {
+    "venueName": "The Pulse",
+    "venueId": "492d26657ff245f09837ec4280d47fcc",
+    "POIs": {
+      "Registration": {
+        "actualPOI": "Concierge",
+        "poiId": "10489854",
+        "floor": 0
+      },
+      "Triage": {
+        "actualPOI": "Workstation 4-3",
+        "poiId": "10484814",
+        "floor": 3
+      },
+      "ECG": {
+        "actualPOI": "TALENT",
+        "poiId": "10484862",
+        "floor": 3
+      },
+      "X-Ray": {
+        "actualPOI": "Workstation 4-5",
+        "poiId": "10484809",
+        "floor": 3
+      },
+      "Consultation": {
+        "actualPOI": "UNITY",
+        "poiId": "10485324",
+        "floor": 4
+      },
+      "Pharmacy": {
+        "actualPOI": "PASSION",
+        "poiId": "10485481",
+        "floor": 4
+      }
+    }
+  }
+}
