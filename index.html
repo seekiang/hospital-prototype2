@@ -17,16 +17,18 @@
         <label class="badge">Hospital</label>
         <select id="hospital" aria-label="Hospital">
           <option
-            data-name="ABC Hospital"
+            data-name="Gleneagles Hospital"
+            data-logofile="Gleneagles Hospital.jpg"
             data-url="https://abc-hospital.example"
           >
-            ABC Hospital
+            Gleneagles Hospital
           </option>
           <option
-            data-name="EFG Hospital"
-            data-url="https://efg-hospital.example"
+            data-name="National University Hospital"
+            data-url="https://nuh.com.sg"
+            data-logofile="NUH.jpg"
           >
-            EFG Hospital
+            National University Hospital
           </option>
         </select>
         <button class="btn full" id="continue">Continue</button>
@@ -44,6 +46,7 @@
       var obj = {
         name: opt.getAttribute("data-name"),
         url: opt.getAttribute("data-url"),
+        logofile: opt.getAttribute("data-logofile"),
       };
       App.setHospital(obj);
       App.go("menu.html");

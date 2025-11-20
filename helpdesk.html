@@ -16,6 +16,7 @@
     >
       <img
         alt="Hospital"
+        data-hospital-logo
         src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"
       />
       <div class="title"><span data-hospital-name>Your Hospital</span></div>
@@ -108,12 +109,19 @@
       mute.textContent = muted ? "Unmute" : "Mute";
     };
 
-    hangup.onclick = function () {
+    hangup.onclick = async function () {
       connected = false;
       if (t) clearInterval(t);
       timerEl.textContent = "Not connected";
       remote.textContent = "";
       remote.style.outline = "none";
+      if (stream) {
+        stream.getTracks().forEach(function (tr) {
+          tr.stop();
+        });
+        stream = null;
+        localVideo.srcObject = null;
+      }
     };
   </script>
 </html>
