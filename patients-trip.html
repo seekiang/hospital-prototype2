@@ -16,6 +16,7 @@
     >
       <img
         alt="Hospital"
+        data-hospital-logo
         src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><rect width='100%' height='100%' rx='12' ry='12' fill='%23ffffff'/><circle cx='36' cy='36' r='22' fill='%232dd4bf'/><path d='M36 18v36M18 36h36' stroke='%230b1220' stroke-width='6' stroke-linecap='round'/></svg>"
       />
       <div class="title"><span data-hospital-name>Your Hospital</span></div>
@@ -73,19 +74,22 @@
       Pharmacy: "pharmacy",
     };
     var steps = document.getElementById("steps");
-    var prevStep = ""
+    var prevStep = "";
     var purpose = document.getElementById("purpose");
-    
+
     window.addEventListener("load", render);
     purpose.addEventListener("change", resetJourney);
     purpose.addEventListener("change", render);
     function render() {
-      console.log("loaded")
+      console.log("loaded");
       steps.innerHTML = "";
       var key = purpose.value;
       if (!key) return;
       // Set steps of selected purpose in localStorage
-      localStorage.setItem("patient_journey_steps", JSON.stringify(journeys[key]));
+      localStorage.setItem(
+        "patient_journey_steps",
+        JSON.stringify(journeys[key])
+      );
       localStorage.setItem("patient_journey_current_step", "0");
 
       journeys[key].forEach(function (step) {
@@ -98,11 +102,14 @@
           '<div class="grid cols-2">' +
           '<button class="btn" data-step="' +
           step +
-          '"' + `data-prev-step=${prevStep}` +  '>Show me the way</button>' +
+          '"' +
+          `data-prev-step='${prevStep}'` +
+          ">Show me the way</button>" +
           '<button class="btn ghost">Info</button>' +
           '</div><hr class="sep">';
         steps.appendChild(row);
         prevStep = step;
+        console.log(step);
       });
       [].slice
         .call(steps.querySelectorAll("[data-step]"))
@@ -116,17 +123,15 @@
                 encodeURIComponent(dest) +
                 "&label=" +
                 encodeURIComponent(step) +
-                "&from=" + 
+                "&from=" +
                 encodeURIComponent(prevStepAttr)
             );
           });
         });
-      var checkboxes = steps.querySelectorAll("input[type='checkbox']"); 
+      var checkboxes = steps.querySelectorAll("input[type='checkbox']");
       checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener("change", trackJourney);
-
-    });
-
+      });
     }
     function trackJourney() {
       // Read the state of the checkboxes and update localStorage
@@ -138,7 +143,10 @@
         }
       });
       console.log("Most updated step index:", mostUpdatedStepIndex);
-      localStorage.setItem("patient_journey_current_step", mostUpdatedStepIndex.toString());
+      localStorage.setItem(
+        "patient_journey_current_step",
+        mostUpdatedStepIndex.toString()
+      );
 
       // Set the colour of the background of each step to green if completed
       /*
@@ -160,7 +168,7 @@
         var confirmReset = confirm(
           "Changing your purpose will reset your current journey. Do you want to proceed?"
         );
-        
+
         if (confirmReset) {
           // User confirmed, reset the saved journey
           App.setPatientPurpose(purpose.value);
@@ -169,8 +177,8 @@
           var savedPurpose = App.getPatientPurpose();
           purpose.value = savedPurpose || "";
           render(); // Re-render the steps based on the reverted selection
+        }
       }
-    }
     }
   </script>
 </html>
